@@ -28,11 +28,4 @@ public class RoleServiceImpl implements RoleService {
         Set<Role> roles = new HashSet<>(roleRepository.findAll());
         return roles;
     }
-
-    @Override
-    public Set<Role> getByName(String name) {
-        TypedQuery<Role> query = entityManager.createQuery("select role from Role role where role.name = :name", Role.class);
-        query.setParameter("name", name);
-        return query.getResultStream().collect(Collectors.toSet());
-    }
 }

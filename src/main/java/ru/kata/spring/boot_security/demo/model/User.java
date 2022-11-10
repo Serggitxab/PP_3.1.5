@@ -1,46 +1,42 @@
 package ru.kata.spring.boot_security.demo.model;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
 @Data
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
-    @Column(name = "firstName")
-    private String firstName;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "lastName")
-    private String lastName;
+    @Column(name = "lastname")
+    private String lastname;
 
     @Column(name = "age")
     private int age;
 
-    @Column(name = "email")
+    @Column(name = "username")
     private String username;
 
     @Column(name = "password")
     private String password;
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
 
     @ManyToMany
     @JoinTable(
@@ -48,17 +44,20 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @Column(name = "roles")
     private Set<Role> roles;
 
-    public User(String firstName, String lastName, int age, String username, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String name, String lastname, int age, String username, String password, Set<Role> roles) {
+        this.name = name;
+        this.lastname = lastname;
         this.age = age;
         this.username = username;
         this.password = password;
+        this.roles = roles;
     }
 
     public User() {
+
     }
 
     @Override
@@ -70,8 +69,13 @@ public class User implements UserDetails {
     public String getUsername() {
         return username;
     }
-    public String getRole(){
-        return String.valueOf(roles);
+
+    public String getRolesList() {
+        StringBuilder sb = new StringBuilder();
+        for (Role role : this.getRoles()) {
+            sb.append(role.getName());
+        }
+        return sb.toString();
     }
 
     @Override
